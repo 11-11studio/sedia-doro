@@ -1,8 +1,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000B4D">
-<title>Cloche d'Oro</title>
-<meta name="description" content="Il voto di fine giornata sul set: passa il telefono, vota, poi la premiazione.">
+<title>Sedia d'Oro</title>
+<meta name="description" content="Il voto di fine giornata sul set: passa il telefono, vota, poi la premiazione sulla sedia da regista.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -61,15 +61,19 @@
   .foot .btn{width:100%}
 
   .hero{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
-  .cloche-wrap{align-self:center;width:190px;margin:4px 0 -6px}
-  .cloche{width:100%;height:auto;display:block;overflow:visible}
-  .cloche .dome{transition:transform .9s cubic-bezier(.2,.8,.2,1);transform-origin:50% 100%}
-  .cloche.up .dome{transform:translateY(-92px) rotate(-6deg)}
-  .cloche .inside{opacity:0;transition:opacity .5s .45s}
-  .cloche.up .inside{opacity:1}
-  .cloche.idle .dome{animation:float 4s ease-in-out infinite}
-  @keyframes float{50%{transform:translateY(-4px)}}
-  @media (prefers-reduced-motion:reduce){.cloche .dome{animation:none!important;transition:none}.cloche .inside{transition:none}}
+  .sedia-wrap{align-self:center;width:190px;margin:4px 0 -6px}
+  .sedia{width:100%;height:auto;display:block;overflow:visible;transform-origin:50% 100%}
+  .sedia .luce,.sedia .faro,.sedia .iniz{opacity:0;transition:opacity .6s ease}
+  .sedia .q{opacity:1;transition:opacity .3s}
+  .sedia.up .luce{opacity:.22}
+  .sedia.up .faro{opacity:.7}
+  .sedia.up .iniz{opacity:1;transition-delay:.35s}
+  .sedia.up .q{opacity:0}
+  .sedia.mostra .iniz{opacity:1}
+  .sedia.mostra .q{opacity:0}
+  .sedia.idle{animation:dondola 5s ease-in-out infinite}
+  @keyframes dondola{50%{transform:rotate(1.5deg)}}
+  @media (prefers-reduced-motion:reduce){.sedia{animation:none!important}.sedia *{transition:none!important}}
   .urna{display:flex;gap:16px;align-items:center;padding:14px 18px;border:1px solid var(--linea);background:var(--fumo);border-radius:var(--r)}
   .urna b{font-size:40px;font-weight:900;line-height:1;color:var(--oro-chiaro);font-variant-numeric:tabular-nums}
   .urna span{color:var(--carta-2);font-size:13px;line-height:1.35}
@@ -143,7 +147,7 @@
   .award .bar svg{width:22px;height:22px;flex:0 0 22px}
   .award .bar b{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
   .award .body{padding:14px 16px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
-  .award .cloche-wrap{width:150px;margin:0}
+  .award .sedia-wrap{width:150px;margin:0}
   .award .nome{font-weight:900;font-size:28px;line-height:1;letter-spacing:-.02em;text-transform:uppercase;color:var(--tc);min-height:28px}
   .award .ruolo{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--carta-3)}
   .award .voti{font-size:13px;color:var(--carta-2)}
@@ -167,9 +171,9 @@
   <section class="screen on" id="s-home">
     <div class="top"><div class="brand"><img src="data:image/png;base64,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" alt="11:11 Studio"><small id="edizione-brand"></small></div><div class="lang" id="lang-home"></div></div>
     <div class="hero">
-      <div class="cloche-wrap" id="hero-cloche"></div>
+      <div class="sedia-wrap" id="hero-sedia"></div>
       <p class="eyebrow" id="edizione-eyebrow"></p>
-      <h1>Cloche <em>d'Oro</em></h1>
+      <h1>Sedia <em>d'Oro</em></h1>
       <p class="muted" data-t="intro"></p>
     </div>
     <div class="urna"><b id="n-voti">0</b><span><span data-t="urn"></span><br><span id="ultimo-voto"></span></span></div>
@@ -224,7 +228,7 @@
 
   <section class="screen" id="s-done">
     <div class="hero" style="flex:1;justify-content:center">
-      <div class="cloche-wrap" id="done-cloche"></div>
+      <div class="sedia-wrap" id="done-sedia"></div>
       <p class="eyebrow" data-t="done_eyebrow"></p>
       <h2 id="done-title"></h2>
       <p class="muted" id="done-gag"></p>
@@ -304,10 +308,10 @@ const PERSONE = [
 const REPARTO_COL = {prod:"#F6DD8E",dir:"#ED8EA9",cam:"#9FD8FF",light:"#FFB27A",hmu:"#C9B8FF",talent:"#B8F0C8",client:"#FFFFFF",guest:"#B8AD98"};
 
 const PREMI = [
-  {id:"mvp", icon:"cloche", col:"#E8B84A", type:"person", fisso:true,
-   it:{n:"Cloche d'Oro", desc:"L'MVP. Senza questa persona oggi giravamo col telefono e la torcia accesa."},
-   en:{n:"Golden Cloche", desc:"The MVP. Without this person we'd have shot today on a phone with the flashlight on."},
-   es:{n:"Cloche de Oro", desc:"El MVP. Sin esta persona hoy rodábamos con el móvil y la linterna encendida."}},
+  {id:"mvp", icon:"chair", col:"#E8B84A", type:"person", fisso:true,
+   it:{n:"Sedia d'Oro", desc:"L'MVP. Senza questa persona oggi giravamo col telefono e la torcia accesa."},
+   en:{n:"Golden Chair", desc:"The MVP. Without this person we'd have shot today on a phone with the flashlight on."},
+   es:{n:"Silla de Oro", desc:"El MVP. Sin esta persona hoy rodábamos con el móvil y la linterna encendida."}},
   {id:"planb", icon:"tape", col:"#FFB27A", type:"person", fisso:true,
    it:{n:"Premio Plan B", desc:"Nastro, fantasia e faccia tosta: quando qualcosa andava storto, c'era lui o lei.", extra:"Cosa ha salvato? Tre parole."},
    en:{n:"Plan B Award", desc:"Tape, imagination and nerve: when something went wrong, this one fixed it.", extra:"What got saved? Three words."},
@@ -329,9 +333,9 @@ const PREMI = [
    en:{n:"Magic Candle", desc:"Kept everyone going at 4 p.m., when we were all tired and the model was freezing."},
    es:{n:"Vela Mágica", desc:"Mantuvo el ánimo a las 16:00, cuando estábamos todos cansados y la modelo tenía frío."}},
   {id:"craft", icon:"cup", col:"#B8F0C8", type:"person", fisso:true,
-   it:{n:"Fantasma del Craft", desc:"Avvistato al tavolo del cibo più della cloche stessa. Abbiamo contato i cornetti."},
-   en:{n:"Craft Table Ghost", desc:"Seen at the snack table more than the cloche itself. We counted the croissants."},
-   es:{n:"Fantasma del Catering", desc:"Visto en la mesa de la comida más que la propia cloche. Contamos los cruasanes."}},
+   it:{n:"Fantasma del Craft", desc:"Avvistato al tavolo del cibo più che sulla sedia del regista. Abbiamo contato i cornetti."},
+   en:{n:"Craft Table Ghost", desc:"Seen at the snack table more than in the director's chair. We counted the croissants."},
+   es:{n:"Fantasma del Catering", desc:"Visto en la mesa de la comida más que en la silla del director. Contamos los cruasanes."}},
   {id:"nattimo", icon:"hourglass", col:"#FFD9A0", type:"person", fisso:true,
    it:{n:"Premio N'attimo", desc:"Ha detto «un attimo» e sono passati venti minuti. Almeno sei volte oggi."},
    en:{n:"The “One Sec” Award", desc:"Said “one sec” and twenty minutes went by. At least six times today."},
@@ -352,69 +356,69 @@ const PREMI = [
 
 const T = {
   it:{
-    awards_link:"Premiazione", archive_link:"Archivio foto", intro:"Dieci minuti prima dello smontaggio. Il telefono gira, ognuno vota una volta e allega una foto della giornata se vuole. Poi si alza la cloche.",
-    urn:"voti sotto la cloche", urn_empty:"ancora nessun voto", urn_last:"ultimo a votare: ", photos_n:n=>`${n} ${n===1?"foto":"foto"}`,
+    awards_link:"Premiazione", archive_link:"Archivio foto", intro:"Dieci minuti prima dello smontaggio. Il telefono gira, ognuno vota una volta e allega una foto della giornata se vuole. Poi si accende il faro sulla sedia.",
+    urn:"voti sulla sedia", urn_empty:"ancora nessun voto", urn_last:"ultimo a votare: ", photos_n:n=>`${n} ${n===1?"foto":"foto"}`,
     vote_btn:"Vota", prizes_label:"I premi di stasera", special:"Edizione speciale", fixed:"Ogni set",
     back:"← Indietro", who_eyebrow:"Il telefono è in mano a te", who_title:"Tu <span class='rosa'>chi sei?</span>", who_sub:"Tocca la tua faccia. Chi ha già votato ha la spunta: un voto a testa.",
     prize_of:(i,n)=>`Premio ${i} di ${n}`, me_hint:"sei tu", jury:"in giuria: ", next:"Avanti", skip:"Passo",
     extra_eyebrow:"Ultima cosa", extra_title:"Tre domande <span class='rosa'>serie.</span><br>E una foto.",
     q_lunch:"Il pranzo", lunch_lo:"1 · ho ancora fame", lunch_hi:"5 · stella Michelin al cuoco",
     q_day:"La giornata", day_lo:"1 · un po' di caos", day_hi:"5 · liscia come l'olio",
-    q_note:"Una cosa da rifare uguale e una da cambiare", note_ph:"Anche una riga sola.", q_photo:"Una foto della giornata (se vuoi)", photo_btn:"Scegli o scatta una foto", cap_ph:"Didascalia, due parole", send:"Chiudi la cloche e passa",
-    done_eyebrow:"Voto sotto la cloche", done_title:n=>`Grazie <span class='rosa'>${n}</span>,<br>passa il telefono.`, done_count:n=>`${n} ${n===1?"voto":"voti"} sotto la cloche.`, done_next:"Prossimo giurato", home_link:"Torna alla home",
-    awards_eyebrow:"Silenzio in sala", awards_title:"La <span class='rosa'>premiazione</span>", awards_sub:"Tocca la cloche per alzarla. Una alla volta, con il rullo di tamburi.",
-    tap:"Tocca e alza", none:"Nessun voto", tie:"pari merito", tie_text:n=>`pari merito con altre ${n}`, votes:(n,t)=>`${n} ${n===1?"voto":"voti"} su ${t}`,
+    q_note:"Una cosa da rifare uguale e una da cambiare", note_ph:"Anche una riga sola.", q_photo:"Una foto della giornata (se vuoi)", photo_btn:"Scegli o scatta una foto", cap_ph:"Didascalia, due parole", send:"Manda il voto e passa",
+    done_eyebrow:"Voto sulla sedia", done_title:n=>`Grazie <span class='rosa'>${n}</span>,<br>passa il telefono.`, done_count:n=>`${n} ${n===1?"voto":"voti"} sulla sedia.`, done_next:"Prossimo giurato", home_link:"Torna alla home",
+    awards_eyebrow:"Silenzio in sala", awards_title:"La <span class='rosa'>premiazione</span>", awards_sub:"Tocca la sedia per accendere il faro. Una alla volta, con il rullo di tamburi.",
+    tap:"Tocca e accendi", none:"Nessun voto", tie:"pari merito", tie_text:n=>`pari merito con altre ${n}`, votes:(n,t)=>`${n} ${n===1?"voto":"voti"} su ${t}`,
     pagella:"La pagella, quella seria", lunch:"Il pranzo", day:"La giornata", of5:"/ 5 · ", votes_w:"voti", novotes:"nessun voto", comments_label:"Da rifare e da cambiare",
     cer_photos:"Foto della premiazione", cer_add:"Aggiungi una foto della premiazione", export_label:"Per il gruppo", copy:"Copia il riepilogo", copied:"Copiato.", copy_fail:"Seleziona il testo e copialo a mano",
     arch_eyebrow:"L'archivio dell'edizione", arch_title:"Le <span class='rosa'>foto</span> del set", arch_sub:"Le foto allegate ai voti e quelle della premiazione. Scarica lo zip a fine serata: dentro ci sono foto, vincitori e voti, pronti per l'archivio dello studio.",
     empty:"Ancora nessuna foto. Chi vota può allegarne una.", tag_set:"set", tag_cer:"premiazione", download:"Scarica l'archivio (zip)", zip_done:"Archivio pronto.", zip_fail:"Serve la connessione per preparare lo zip.",
     reset:"Svuota tutto per il prossimo set", reset_confirm:"Svuoto voti e foto da questo telefono? Prima scarica l'archivio.", reset_done:"Tutto vuoto, pronto per il prossimo set", jurors:"giurati", count:n=>`${n} ${n===1?"voto":"voti"}`, del_confirm:"Elimino questa foto?",
-    gag:["Voto valido anche col glitter sulle dita.","Il craft ringrazia.","Motore. Partito. Voto in macchina.","Ultimo cambio, dicevano. Erano le 14.","Il tuo voto è al sicuro sotto la cloche.","N'attimo. N'attimo. N'attimo.","Un voto in più, un cornetto in meno."],
+    gag:["Voto valido anche col glitter sulle dita.","Il craft ringrazia.","Motore. Partito. Voto in macchina.","Ultimo cambio, dicevano. Erano le 14.","Il tuo voto è già sulla sedia.","N'attimo. N'attimo. N'attimo.","Un voto in più, un cornetto in meno."],
   },
   en:{
-    awards_link:"Ceremony", archive_link:"Photo archive", intro:"Ten minutes before wrap. The phone goes round, everyone votes once and can attach a photo of the day. Then the cloche comes up.",
-    urn:"votes under the cloche", urn_empty:"no votes yet", urn_last:"last to vote: ", photos_n:n=>`${n} ${n===1?"photo":"photos"}`,
+    awards_link:"Ceremony", archive_link:"Photo archive", intro:"Ten minutes before wrap. The phone goes round, everyone votes once and can attach a photo of the day. Then the spotlight hits the chair.",
+    urn:"votes on the chair", urn_empty:"no votes yet", urn_last:"last to vote: ", photos_n:n=>`${n} ${n===1?"photo":"photos"}`,
     vote_btn:"Vote", prizes_label:"Tonight's awards", special:"This edition only", fixed:"Every shoot",
     back:"← Back", who_eyebrow:"The phone is in your hands", who_title:"Who <span class='rosa'>are you?</span>", who_sub:"Tap your face. Anyone who has voted gets a tick: one vote each.",
     prize_of:(i,n)=>`Award ${i} of ${n}`, me_hint:"that's you", jury:"jury: ", next:"Next", skip:"Skip",
     extra_eyebrow:"Last thing", extra_title:"Three <span class='rosa'>serious</span> questions.<br>And a photo.",
     q_lunch:"Lunch", lunch_lo:"1 · still hungry", lunch_hi:"5 · Michelin star for the cook",
     q_day:"The day", day_lo:"1 · a bit of chaos", day_hi:"5 · smooth as silk",
-    q_note:"One thing to do again and one to change", note_ph:"Even one line.", q_photo:"A photo of the day (if you like)", photo_btn:"Pick or take a photo", cap_ph:"Caption, two words", send:"Close the cloche and pass it on",
-    done_eyebrow:"Vote's under the cloche", done_title:n=>`Thanks <span class='rosa'>${n}</span>,<br>pass the phone.`, done_count:n=>`${n} ${n===1?"vote":"votes"} under the cloche.`, done_next:"Next juror", home_link:"Back to home",
-    awards_eyebrow:"Quiet on set", awards_title:"The <span class='rosa'>ceremony</span>", awards_sub:"Tap a cloche to lift it. One at a time, with a drumroll.",
-    tap:"Tap to lift", none:"No votes", tie:"tie", tie_text:n=>`tied with ${n} more`, votes:(n,t)=>`${n} ${n===1?"vote":"votes"} of ${t}`,
+    q_note:"One thing to do again and one to change", note_ph:"Even one line.", q_photo:"A photo of the day (if you like)", photo_btn:"Pick or take a photo", cap_ph:"Caption, two words", send:"Send the vote and pass it on",
+    done_eyebrow:"Vote's on the chair", done_title:n=>`Thanks <span class='rosa'>${n}</span>,<br>pass the phone.`, done_count:n=>`${n} ${n===1?"vote":"votes"} on the chair.`, done_next:"Next juror", home_link:"Back to home",
+    awards_eyebrow:"Quiet on set", awards_title:"The <span class='rosa'>ceremony</span>", awards_sub:"Tap a chair to switch the spotlight on. One at a time, with a drumroll.",
+    tap:"Tap to light it up", none:"No votes", tie:"tie", tie_text:n=>`tied with ${n} more`, votes:(n,t)=>`${n} ${n===1?"vote":"votes"} of ${t}`,
     pagella:"The report card, the serious one", lunch:"Lunch", day:"The day", of5:"/ 5 · ", votes_w:"votes", novotes:"no votes", comments_label:"Do again, change",
     cer_photos:"Ceremony photos", cer_add:"Add a ceremony photo", export_label:"For the group chat", copy:"Copy the summary", copied:"Copied.", copy_fail:"Select the text and copy it by hand",
     arch_eyebrow:"This edition's archive", arch_title:"The <span class='rosa'>photos</span> from set", arch_sub:"Photos attached to the votes plus the ceremony shots. Download the zip at the end of the night: photos, winners and votes, ready for the studio archive.",
     empty:"No photos yet. Anyone voting can attach one.", tag_set:"set", tag_cer:"ceremony", download:"Download the archive (zip)", zip_done:"Archive ready.", zip_fail:"You need a connection to build the zip.",
     reset:"Clear everything for the next shoot", reset_confirm:"Clear votes and photos from this phone? Download the archive first.", reset_done:"All clear, ready for the next shoot", jurors:"jurors", count:n=>`${n} ${n===1?"vote":"votes"}`, del_confirm:"Delete this photo?",
-    gag:["Vote counts even with glitter on your fingers.","The craft table thanks you.","Roll sound. Roll camera. Vote's in the can.","“Last look”, they said. It was 2 p.m.","Your vote is safe under the cloche.","One sec. One sec. One sec.","One more vote, one less croissant."],
+    gag:["Vote counts even with glitter on your fingers.","The craft table thanks you.","Roll sound. Roll camera. Vote's in the can.","“Last look”, they said. It was 2 p.m.","Your vote is already on the chair.","One sec. One sec. One sec.","One more vote, one less croissant."],
   },
   es:{
-    awards_link:"Entrega de premios", archive_link:"Archivo de fotos", intro:"Diez minutos antes de desmontar. El móvil va pasando, cada uno vota una vez y puede añadir una foto del día. Luego se levanta la cloche.",
-    urn:"votos bajo la cloche", urn_empty:"todavía sin votos", urn_last:"último en votar: ", photos_n:n=>`${n} ${n===1?"foto":"fotos"}`,
+    awards_link:"Entrega de premios", archive_link:"Archivo de fotos", intro:"Diez minutos antes de desmontar. El móvil va pasando, cada uno vota una vez y puede añadir una foto del día. Luego se enciende el foco sobre la silla.",
+    urn:"votos en la silla", urn_empty:"todavía sin votos", urn_last:"último en votar: ", photos_n:n=>`${n} ${n===1?"foto":"fotos"}`,
     vote_btn:"Votar", prizes_label:"Los premios de esta noche", special:"Solo esta edición", fixed:"Cada rodaje",
     back:"← Atrás", who_eyebrow:"El móvil está en tus manos", who_title:"¿Y tú <span class='rosa'>quién eres?</span>", who_sub:"Toca tu cara. Quien ya ha votado tiene el tic: un voto por persona.",
     prize_of:(i,n)=>`Premio ${i} de ${n}`, me_hint:"eres tú", jury:"jurado: ", next:"Siguiente", skip:"Paso",
     extra_eyebrow:"Lo último", extra_title:"Tres preguntas <span class='rosa'>serias.</span><br>Y una foto.",
     q_lunch:"La comida", lunch_lo:"1 · sigo con hambre", lunch_hi:"5 · estrella Michelin para el cocinero",
     q_day:"La jornada", day_lo:"1 · un poco de caos", day_hi:"5 · como la seda",
-    q_note:"Una cosa para repetir y otra para cambiar", note_ph:"Aunque sea una línea.", q_photo:"Una foto del día (si quieres)", photo_btn:"Elige o haz una foto", cap_ph:"Pie de foto, dos palabras", send:"Cierra la cloche y pásalo",
-    done_eyebrow:"Voto bajo la cloche", done_title:n=>`Gracias <span class='rosa'>${n}</span>,<br>pasa el móvil.`, done_count:n=>`${n} ${n===1?"voto":"votos"} bajo la cloche.`, done_next:"Siguiente jurado", home_link:"Volver al inicio",
-    awards_eyebrow:"Silencio en el set", awards_title:"La <span class='rosa'>entrega</span> de premios", awards_sub:"Toca la cloche para levantarla. De una en una, con redoble de tambor.",
-    tap:"Toca y levanta", none:"Sin votos", tie:"empate", tie_text:n=>`empate con ${n} más`, votes:(n,t)=>`${n} ${n===1?"voto":"votos"} de ${t}`,
+    q_note:"Una cosa para repetir y otra para cambiar", note_ph:"Aunque sea una línea.", q_photo:"Una foto del día (si quieres)", photo_btn:"Elige o haz una foto", cap_ph:"Pie de foto, dos palabras", send:"Envía el voto y pásalo",
+    done_eyebrow:"Voto en la silla", done_title:n=>`Gracias <span class='rosa'>${n}</span>,<br>pasa el móvil.`, done_count:n=>`${n} ${n===1?"voto":"votos"} en la silla.`, done_next:"Siguiente jurado", home_link:"Volver al inicio",
+    awards_eyebrow:"Silencio en el set", awards_title:"La <span class='rosa'>entrega</span> de premios", awards_sub:"Toca la silla para encender el foco. De una en una, con redoble de tambor.",
+    tap:"Toca y enciende", none:"Sin votos", tie:"empate", tie_text:n=>`empate con ${n} más`, votes:(n,t)=>`${n} ${n===1?"voto":"votos"} de ${t}`,
     pagella:"El boletín, el serio", lunch:"La comida", day:"La jornada", of5:"/ 5 · ", votes_w:"votos", novotes:"sin votos", comments_label:"Para repetir y para cambiar",
     cer_photos:"Fotos de la entrega", cer_add:"Añade una foto de la entrega", export_label:"Para el grupo", copy:"Copiar el resumen", copied:"Copiado.", copy_fail:"Selecciona el texto y cópialo a mano",
     arch_eyebrow:"El archivo de esta edición", arch_title:"Las <span class='rosa'>fotos</span> del set", arch_sub:"Las fotos adjuntas a los votos y las de la entrega. Descarga el zip al final de la noche: fotos, ganadores y votos, listos para el archivo del estudio.",
     empty:"Todavía no hay fotos. Quien vota puede añadir una.", tag_set:"set", tag_cer:"entrega", download:"Descargar el archivo (zip)", zip_done:"Archivo listo.", zip_fail:"Hace falta conexión para preparar el zip.",
     reset:"Vaciar todo para el próximo rodaje", reset_confirm:"¿Borro votos y fotos de este móvil? Descarga antes el archivo.", reset_done:"Todo vacío, listo para el próximo rodaje", jurors:"jurados", count:n=>`${n} ${n===1?"voto":"votos"}`, del_confirm:"¿Elimino esta foto?",
-    gag:["Voto válido aunque tengas purpurina en los dedos.","El catering te lo agradece.","Sonido. Cámara. Voto en la lata.","«Último retoque», decían. Eran las 14:00.","Tu voto está a salvo bajo la cloche.","Un momento. Un momento. Un momento.","Un voto más, un cruasán menos."],
+    gag:["Voto válido aunque tengas purpurina en los dedos.","El catering te lo agradece.","Sonido. Cámara. Voto en la lata.","«Último retoque», decían. Eran las 14:00.","Tu voto ya está en la silla.","Un momento. Un momento. Un momento.","Un voto más, un cruasán menos."],
   }
 };
 
 const ICONS = {
-  cloche:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16a9 9 0 0 1 18 0Z"/><path d="M2 16h20"/><path d="M12 7V5"/><path d="M4 19h16"/></svg>',
+  chair:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="5" rx="1"/><path d="M5 12h14"/><path d="M6 12l12 8M18 12L6 20"/><path d="M6 3v9M18 3v9"/></svg>',
   tape:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><circle cx="11" cy="11" r="3"/><path d="M17 15l4 3v3h-6"/></svg>',
   vinyl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 5.5a6.5 6.5 0 0 1 6.5 6.5"/><path d="M20 4l-3 4"/></svg>',
   hanger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9a2 2 0 1 0-2-2"/><path d="M12 9v2"/><path d="M12 11 3 17h18l-9-6Z"/></svg>',
@@ -428,7 +432,7 @@ const ICONS = {
 };
 
 /* ============ MOTORE ============ */
-const KEY = "cloche-doro-" + EDIZIONE.id;
+const KEY = "sedia-doro-" + EDIZIONE.id;
 const $ = s => document.querySelector(s);
 const el = (t,c,h) => { const e=document.createElement(t); if(c) e.className=c; if(h!=null) e.innerHTML=h; return e; };
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -444,7 +448,7 @@ let VOTI = load();
 let corrente = null, idx = 0, schermo = "home", fotoPending = null;
 
 /* ---- foto in IndexedDB ---- */
-const DB = { name:"cloche-doro", store:"foto" };
+const DB = { name:"sedia-doro", store:"foto" };
 function dbOpen(){ return new Promise((ok,ko)=>{ const r=indexedDB.open(DB.name,1); r.onupgradeneeded=()=>{ const s=r.result.createObjectStore(DB.store,{keyPath:"id"}); s.createIndex("ed","ed"); }; r.onsuccess=()=>ok(r.result); r.onerror=()=>ko(r.error); }); }
 async function fotoAdd(rec){ const d=await dbOpen(); return new Promise((ok,ko)=>{ const tx=d.transaction(DB.store,"readwrite"); tx.objectStore(DB.store).put(rec); tx.oncomplete=ok; tx.onerror=()=>ko(tx.error); }); }
 async function fotoAll(){ try{ const d=await dbOpen(); return new Promise((ok,ko)=>{ const r=d.transaction(DB.store).objectStore(DB.store).index("ed").getAll(EDIZIONE.id); r.onsuccess=()=>ok(r.result.sort((a,b)=>a.t<b.t?-1:1)); r.onerror=()=>ko(r.error); }); }catch(e){ return []; } }
@@ -455,11 +459,19 @@ const urlCache = new Map();
 function fotoURL(f){ if(!urlCache.has(f.id)) urlCache.set(f.id, URL.createObjectURL(f.blob)); return urlCache.get(f.id); }
 async function salvaFoto(file, kind, voter, cap){ const blob=await ridimensiona(file); const rec={id:Date.now()+"-"+Math.random().toString(36).slice(2,7), ed:EDIZIONE.id, kind, voter, cap:cap||"", t:new Date().toISOString(), blob}; await fotoAdd(rec); return rec; }
 
-function clocheSVG(){
-  return `<svg class="cloche" viewBox="0 0 200 150" aria-hidden="true">
-    <g class="inside"><circle cx="100" cy="104" r="14" fill="#ED8EA9"/><path d="M92 104 l6 7 l12 -13" fill="none" stroke="#1A1A1A" stroke-width="3"/></g>
-    <g class="dome"><path d="M22 118 A78 78 0 0 1 178 118 Z" fill="#E8B84A"/><path d="M36 112 A64 64 0 0 1 100 48" fill="none" stroke="#F6DD8E" stroke-width="3" stroke-linecap="round" opacity=".9"/><rect x="94" y="30" width="12" height="12" rx="6" fill="#F6DD8E"/><rect x="97" y="38" width="6" height="8" fill="#B8862B"/></g>
-    <path d="M10 120 H190 L180 132 H20 Z" fill="#8E6A1E"/><path d="M14 120 H186" stroke="#F6DD8E" stroke-width="2"/>
+function sediaSVG(txt, mostra){
+  const t=(txt||"").length>6?txt.slice(0,6):(txt||"");
+  const fs=t.length>4?18:(t.length>3?22:26);
+  return `<svg class="sedia${mostra?" mostra":""}" viewBox="0 0 200 170" aria-hidden="true">
+    <path class="luce" d="M100 -20 L10 150 H190 Z" fill="#F6DD8E"/>
+    <ellipse class="faro" cx="100" cy="158" rx="92" ry="10" fill="#F6DD8E"/>
+    <rect x="36" y="6" width="9" height="154" rx="4" fill="#8E6A1E"/><rect x="155" y="6" width="9" height="154" rx="4" fill="#8E6A1E"/>
+    <rect x="45" y="16" width="110" height="42" rx="4" fill="#E8B84A"/>
+    <text class="q" x="100" y="46" text-anchor="middle" font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="28" fill="#1A1A1A">?</text>
+    <text class="iniz" x="100" y="45" text-anchor="middle" font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="${fs}" fill="#1A1A1A">${esc(t)}</text>
+    <rect x="32" y="96" width="136" height="14" rx="4" fill="#E8B84A"/>
+    <path d="M42 110 L158 156 M158 110 L42 156" stroke="#8E6A1E" stroke-width="6" stroke-linecap="round"/>
+    <rect x="30" y="154" width="26" height="7" rx="3.5" fill="#8E6A1E"/><rect x="144" y="154" width="26" height="7" rx="3.5" fill="#8E6A1E"/>
   </svg>`;
 }
 function setAcc(c){ document.documentElement.style.setProperty("--acc", c); }
@@ -482,7 +494,7 @@ async function renderHome(){
   $("#ultimo-voto").textContent = VOTI.length ? t("urn_last")+VOTI[VOTI.length-1].voter : t("urn_empty");
   const s=$("#strip"); s.innerHTML="";
   PREMI.forEach(p=>{ const d=el("div","tile"+(p.fisso?"":" speciale")); d.style.setProperty("--tc",p.col); d.innerHTML=`<div class="ic">${ICONS[p.icon]}</div><b>${esc(pn(p,"n"))}</b><i>${p.fisso?t("fixed"):t("special")}</i>`; s.append(d); });
-  if(!$("#hero-cloche").innerHTML){ $("#hero-cloche").innerHTML = clocheSVG(); $("#hero-cloche .cloche").classList.add("idle"); }
+  if(!$("#hero-sedia").innerHTML){ $("#hero-sedia").innerHTML = sediaSVG("11:11", true); $("#hero-sedia .sedia").classList.add("idle"); }
   const f=await fotoAll(); $("#home-foto").textContent = t("photos_n")(f.length);
 }
 
@@ -537,8 +549,8 @@ function avanti(){ idx++; if(idx<PREMI.length) renderCat(); else go("extra"); }
 $("#cat-back").addEventListener("click",()=>{ if(idx===0) go("who"); else { idx--; renderCat(); } });
 
 /* ---- domande + foto ---- */
-const clocheIcon = ()=>`<svg viewBox="0 0 24 24" fill="none" stroke="#E8B84A" stroke-width="1.8" stroke-linecap="round"><path d="M3 15a9 9 0 0 1 18 0Z"/><path d="M2 15h20"/><path d="M12 6V4"/></svg>`;
-function renderRate(target,key){ const r=$(target); r.innerHTML=""; for(let i=1;i<=5;i++){ const b=el("button",corrente.ratings[key]>=i?"on":"",clocheIcon()); b.type="button"; b.setAttribute("aria-label",i); b.addEventListener("click",()=>{ corrente.ratings[key]=i; renderRate(target,key); }); r.append(b); } }
+const sediaIcon = ()=>`<svg viewBox="0 0 24 24" fill="none" stroke="#E8B84A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="5" rx="1"/><path d="M5 12h14"/><path d="M6 12l12 8M18 12L6 20"/><path d="M6 3v9M18 3v9"/></svg>`;
+function renderRate(target,key){ const r=$(target); r.innerHTML=""; for(let i=1;i<=5;i++){ const b=el("button",corrente.ratings[key]>=i?"on":"",sediaIcon()); b.type="button"; b.setAttribute("aria-label",i); b.addEventListener("click",()=>{ corrente.ratings[key]=i; renderRate(target,key); }); r.append(b); } }
 function renderExtra(){ renderProgress("#progress2", PREMI.length); $("#extra-voter").textContent=t("jury")+corrente.voter; renderRate("#rate-pranzo","pranzo"); renderRate("#rate-org","org"); $("#nota").value=corrente.nota||""; mostraPrev(); }
 function mostraPrev(){ const pv=$("#foto-prev"); if(fotoPending){ pv.classList.add("on"); pv.querySelector("img").src=URL.createObjectURL(fotoPending); $("#foto-cap").hidden=false; $("#foto-btn").hidden=true; } else { pv.classList.remove("on"); $("#foto-cap").hidden=true; $("#foto-btn").hidden=false; $("#foto-cap").value=""; } }
 $("#nota").addEventListener("input",e=>corrente.nota=e.target.value.trim());
@@ -554,9 +566,9 @@ $("#extra-send").addEventListener("click",async()=>{
   $("#done-title").innerHTML = t("done_title")(esc(corrente.voter.split(" ")[0]));
   $("#done-count").textContent = t("done_count")(VOTI.length);
   const g=t("gag"); $("#done-gag").textContent = g[Math.floor(Math.random()*g.length)];
-  $("#done-cloche").innerHTML = clocheSVG();
+  $("#done-sedia").innerHTML = sediaSVG(iniziali(corrente.voter));
   go("done");
-  setTimeout(()=>$("#done-cloche .cloche")?.classList.add("up"),250);
+  setTimeout(()=>$("#done-sedia .sedia")?.classList.add("up"),250);
 });
 
 /* ---- premiazione ---- */
@@ -569,7 +581,7 @@ function media(key){ const xs=VOTI.map(v=>v.ratings[key]).filter(Boolean); retur
 const norm = s => (s||"").toLowerCase().replace(/[.!?…]+$/,"").trim();
 const fmt = x => x.m.toFixed(1).replace(".", LANG==="en"?".":",");
 function risultati(){
-  const righe=[`🏆 CLOCHE D'ORO · ${EDIZIONE.titolo}`, EDIZIONE.luogo, `${VOTI.length} ${t("jurors")}`, ""];
+  const righe=[`🪑 SEDIA D'ORO · ${EDIZIONE.titolo}`, EDIZIONE.luogo, `${VOTI.length} ${t("jurors")}`, ""];
   const cards=[];
   PREMI.forEach(p=>{
     const c = p.type==="person" ? conta(v=>v.picks[p.id]) : conta(v=>norm(v.texts[p.id]));
@@ -592,10 +604,11 @@ async function renderAwards(){
   const A=$("#awards"); A.innerHTML="";
   R.cards.forEach(({p,c,nomi,sub,quote})=>{
     const card=el("div","award"); card.style.setProperty("--tc",p.col);
-    card.innerHTML=`<div class="bar">${ICONS[p.icon]}<b>${esc(pn(p,"n"))}</b></div><div class="body"><div class="cloche-wrap">${clocheSVG()}</div>
+    const iniz = !c.vincitori.length ? "–" : (p.type==="text" ? "«»" : (c.vincitori.length>1 ? "&" : iniziali(c.vincitori[0])));
+    card.innerHTML=`<div class="bar">${ICONS[p.icon]}<b>${esc(pn(p,"n"))}</b></div><div class="body"><div class="sedia-wrap">${sediaSVG(iniz)}</div>
       <p class="tap">${t("tap")}</p><div class="nome" hidden>${esc(nomi)}</div><div class="ruolo" hidden>${esc(sub)}</div>
       <div class="voti" hidden>${c.n?t("votes")(c.n,VOTI.length):""}</div>${quote.length?`<blockquote hidden>${quote.map(q=>"«"+esc(q)+"»").join(" · ")}</blockquote>`:""}</div>`;
-    card.addEventListener("click",()=>{ card.classList.add("rev"); card.querySelector(".cloche").classList.add("up"); card.querySelectorAll("[hidden]").forEach(x=>x.hidden=false); },{once:true});
+    card.addEventListener("click",()=>{ card.classList.add("rev"); card.querySelector(".sedia").classList.add("up"); card.querySelectorAll("[hidden]").forEach(x=>x.hidden=false); },{once:true});
     A.append(card);
   });
   const P=$("#pagella"); P.innerHTML="";
@@ -623,15 +636,15 @@ async function renderArchivio(){
 $("#zip").addEventListener("click",async()=>{
   if(typeof JSZip==="undefined"){ toast(t("zip_fail")); return; }
   VOTI=load(); const R=risultati(); const foto=await fotoAll();
-  const z=new JSZip(); const root=z.folder("Cloche-d-Oro_"+EDIZIONE.id);
+  const z=new JSZip(); const root=z.folder("Sedia-d-Oro_"+EDIZIONE.id);
   root.file("risultati.txt", R.testo);
   root.file("voti.json", JSON.stringify(VOTI,null,2));
   const pad=n=>String(n).padStart(2,"0"); const nomi=[];
   foto.forEach((f,i)=>{ const nome=`foto/${pad(i+1)}_${f.kind}_${(f.voter||"").replace(/[^\w]+/g,"-")||"x"}.jpg`; root.file(nome,f.blob); nomi.push({nome,f}); });
-  const html=`<!doctype html><meta charset="utf-8"><title>Cloche d'Oro · ${esc(EDIZIONE.titolo)}</title><style>body{font-family:Montserrat,Arial,sans-serif;background:#000B4D;color:#fff;margin:0;padding:24px;max-width:960px;margin:auto}h1{font-weight:900}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}.g img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}.g figcaption{font-size:12px;opacity:.75}pre{white-space:pre-wrap;background:rgba(255,255,255,.07);padding:16px;border-radius:12px}</style><h1>Cloche d'Oro</h1><p>${esc(EDIZIONE.titolo)} · ${esc(EDIZIONE.luogo)}</p><pre>${esc(R.testo)}</pre><div class="g">${nomi.map(({nome,f})=>`<figure><img src="${nome}" alt=""><figcaption>${esc(f.cap||"")} ${f.voter?"· "+esc(f.voter):""} · ${f.kind}</figcaption></figure>`).join("")}</div>`;
+  const html=`<!doctype html><meta charset="utf-8"><title>Sedia d'Oro · ${esc(EDIZIONE.titolo)}</title><style>body{font-family:Montserrat,Arial,sans-serif;background:#000B4D;color:#fff;margin:0;padding:24px;max-width:960px;margin:auto}h1{font-weight:900}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}.g img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}.g figcaption{font-size:12px;opacity:.75}pre{white-space:pre-wrap;background:rgba(255,255,255,.07);padding:16px;border-radius:12px}</style><h1>Sedia d'Oro</h1><p>${esc(EDIZIONE.titolo)} · ${esc(EDIZIONE.luogo)}</p><pre>${esc(R.testo)}</pre><div class="g">${nomi.map(({nome,f})=>`<figure><img src="${nome}" alt=""><figcaption>${esc(f.cap||"")} ${f.voter?"· "+esc(f.voter):""} · ${f.kind}</figcaption></figure>`).join("")}</div>`;
   root.file("index.html", html);
   const blob=await z.generateAsync({type:"blob"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="Cloche-d-Oro_"+EDIZIONE.id+".zip"; document.body.append(a); a.click(); a.remove();
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="Sedia-d-Oro_"+EDIZIONE.id+".zip"; document.body.append(a); a.click(); a.remove();
   toast(t("zip_done"));
 });
 $("#reset").addEventListener("click",async()=>{ if(confirm(t("reset_confirm"))){ VOTI=[]; save(VOTI); await fotoClear(); go("home"); toast(t("reset_done")); } });
