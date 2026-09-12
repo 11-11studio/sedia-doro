@@ -481,8 +481,11 @@ const isRegia = () => !!regiaKey();
 const online = () => !!BACKEND.ENDPOINT;
 
 /* chiamate al backend */
-async function apiPost(payload){ const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)}); const j=await r.json(); if(!j||!j.ok) throw new Error((j&&j.errore)||"server"); return j; }
-async function apiGet(q){ const r=await fetch(BACKEND.ENDPOINT+"?"+q); const j=await r.json(); if(!j||!j.ok) throw new Error((j&&j.errore)||"server"); return j; }
+async function apiPost(payload){ const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),60000); try{ const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload),signal:ctl.signal}); const j=await r.json(); if(!j||!j.ok) throw new Error((j&&j.errore)||"server"); return j; } finally{ clearTimeout(tm); } }
+async function apiGet(q, tent){ tent=tent||0; const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),15000);
+  try{ const r=await fetch(BACKEND.ENDPOINT+"?"+q,{signal:ctl.signal}); const j=await r.json(); if(!j||!j.ok) throw new Error((j&&j.errore)||"server"); return j; }
+  catch(e){ if(tent<1){ return apiGet(q, tent+1); } throw e; }
+  finally{ clearTimeout(tm); } }
 const PEND_KEY = "sedia-doro-pending-" + EDIZIONE.id;
 function pendLoad(){ try{ return JSON.parse(localStorage.getItem(PEND_KEY)||"[]"); }catch(e){ return []; } }
 function pendSave(v){ try{ localStorage.setItem(PEND_KEY, JSON.stringify(v)); }catch(e){} }
@@ -643,7 +646,7 @@ $("#extra-send").addEventListener("click",async()=>{
   VOTI.push(corrente); save(VOTI);
   if(online()){
     const payload={tipo:"voto", ed:EDIZIONE.id, voter:corrente.voter, lang:LANG, picks:corrente.picks, texts:corrente.texts, ratings:corrente.ratings, nota:corrente.nota, t:corrente.t, foto: fotoB64?{data:fotoB64,cap}:null};
-    try{ await apiPost(payload); }catch(e){ const q=pendLoad(); q.push(payload); pendSave(q); toast(t("sent_local")); }
+    try{ await apiPost(payload); if(corrente.foto) segnaInviata(corrente.foto); }catch(e){ const q=pendLoad(); q.push(payload); pendSave(q); toast(t("sent_local")); }
   }
   btn.disabled=false; btn.textContent=t("send");
   $("#done-title").innerHTML = t("done_title")(esc(corrente.voter.split(" ")[0]));
@@ -690,7 +693,8 @@ async function caricaRemoto(){
   if(!online()) { REMOTE=null; return; }
   try{ const j=await apiGet("ed="+encodeURIComponent(EDIZIONE.id)+"&risultati=1"+(isRegia()?"&regia="+encodeURIComponent(regiaKey()):"")); REMOTE=j; if(j.n!=null){ $("#n-voti").textContent=j.n; } }catch(e){ REMOTE=null; toast("!"); }
 }
-async function tutteLeFoto(){ const loc=await fotoAll(); if(!REMOTE) return loc; const ids=new Set(loc.map(f=>f.id)); return [...loc, ...REMOTE.foto.filter(f=>!ids.has(f.id))]; }
+async function tutteLeFoto(){ const loc=await fotoAll(); if(!REMOTE) return loc; return [...loc.filter(f=>!f.sent), ...REMOTE.foto]; }
+async function segnaInviata(id){ try{ const d=await dbOpen(); const tx=d.transaction(DB.store,"readwrite"); const st=tx.objectStore(DB.store); const r=st.get(id); r.onsuccess=()=>{ const rec=r.result; if(rec){ rec.sent=true; st.put(rec); } }; }catch(e){} }
 async function renderAwards(){
   await caricaRemoto();
   VOTI = REMOTE ? REMOTE.voti : load();
@@ -721,7 +725,7 @@ async function renderAwards(){
   (await tutteLeFoto()).filter(f=>f.kind==="cer").forEach(f=>{ const i=el("img"); i.src=fotoURL(f); i.alt=f.cap; th.append(i); });
 }
 $("#cer-btn").addEventListener("click",()=>$("#cer-file").click());
-$("#cer-file").addEventListener("change",async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; try{ const rec=await salvaFoto(f,"cer","",""); if(online()){ try{ await apiPost({tipo:"foto", ed:EDIZIONE.id, kind:"cer", voter:"", cap:"", data:await blobToB64(rec.blob), t:rec.t}); }catch(err){ toast(t("sent_local")); } } renderAwards(); }catch(err){ toast("!"); } });
+$("#cer-file").addEventListener("change",async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; try{ const rec=await salvaFoto(f,"cer","",""); if(online()){ try{ await apiPost({tipo:"foto", ed:EDIZIONE.id, kind:"cer", voter:"", cap:"", data:await blobToB64(rec.blob), t:rec.t}); segnaInviata(rec.id); }catch(err){ toast(t("sent_local")); } } renderAwards(); }catch(err){ toast("!"); } });
 $("#copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText($("#export").textContent); toast(t("copied")); }catch(e){ toast(t("copy_fail")); } });
 
 /* ---- archivio ---- */
