@@ -192,6 +192,14 @@
     <h2 id="who-title"></h2>
     <p class="muted small" data-t="who_sub"></p>
     <div class="grid" id="grid-who"></div>
+    <div id="who-add">
+      <button class="btn ghost" id="who-add-btn" type="button" data-t="add_me"></button>
+      <div class="foto-add" id="who-add-form" hidden>
+        <input type="text" id="who-name" maxlength="40" autocomplete="off">
+        <input type="text" id="who-role" maxlength="40" autocomplete="off">
+        <button class="btn" id="who-add-ok" type="button" data-t="add_ok"></button>
+      </div>
+    </div>
   </section>
 
   <section class="screen" id="s-cat">
@@ -291,6 +299,7 @@ const PERSONE = [
   ["Lucia Manetti","Production Assistant","prod"],
   ["Salvatore Rocco","Director","dir"],
   ["Rebecca di Pace","Director's Assistant","dir"],
+  ["Nicola Daino","Camera Operator · Day 1","cam"],
   ["Vito Calabrese","Steadicam Operator","cam"],
   ["Luigi Carillo","1st AC","cam"],
   ["Martina Mugnai","2nd AC","cam"],
@@ -302,10 +311,21 @@ const PERSONE = [
   ["Lucio Bartozzi","Hair Stylist","hmu"],
   ["Giulia","Model","talent"],
   ["Anna Chiara Barra","Model","talent"],
-  ["Adela","Client","client"],
+  ["Adela","Tally Weijl","client"],
+  ["Serena","Tally Weijl","client"],
+  ["Roberto (Tally Weijl)","Tally Weijl","client"],
+  ["Josè","Tally Weijl","client"],
+  ["Vincenzo","Videomaker · Tally Weijl","client"],
+  ["Marta","Wardrobe · Tally Weijl","client"],
+  ["Gianmarco","Nero Studio","studio"],
   ["Guest","Guest","guest"],
 ];
-const REPARTO_COL = {prod:"#F6DD8E",dir:"#ED8EA9",cam:"#9FD8FF",light:"#FFB27A",hmu:"#C9B8FF",talent:"#B8F0C8",client:"#FFFFFF",guest:"#B8AD98"};
+/* Chi non si trova nella lista si aggiunge da solo dalla pagina «Tu chi sei?»: resta salvato sul telefono. */
+const EXTRA_KEY = "sedia-doro-extra-" + EDIZIONE.id;
+function extraLoad(){ try{ return JSON.parse(localStorage.getItem(EXTRA_KEY)||"[]"); }catch(e){ return []; } }
+function extraSave(v){ try{ localStorage.setItem(EXTRA_KEY, JSON.stringify(v)); }catch(e){} }
+extraLoad().forEach(([n,r])=>{ if(!PERSONE.some(p=>p[0]===n)) PERSONE.splice(PERSONE.length-1,0,[n,r||"",  "extra"]); });
+const REPARTO_COL = {prod:"#F6DD8E",dir:"#ED8EA9",cam:"#9FD8FF",light:"#FFB27A",hmu:"#C9B8FF",talent:"#B8F0C8",client:"#FFFFFF",studio:"#FFD9A0",extra:"#9FF0E6",guest:"#B8AD98"};
 
 const PREMI = [
   {id:"mvp", icon:"chair", col:"#E8B84A", type:"person", fisso:true,
@@ -360,6 +380,7 @@ const T = {
     urn:"voti sulla sedia", urn_empty:"ancora nessun voto", urn_last:"ultimo a votare: ", photos_n:n=>`${n} ${n===1?"foto":"foto"}`,
     vote_btn:"Vota", prizes_label:"I premi di stasera", special:"Edizione speciale", fixed:"Ogni set",
     back:"← Indietro", who_eyebrow:"Il telefono è in mano a te", who_title:"Tu <span class='rosa'>chi sei?</span>", who_sub:"Tocca la tua faccia. Chi ha già votato ha la spunta: un voto a testa.",
+    add_me:"Non ti trovi? Aggiungiti", add_name:"Nome e cognome", add_role:"Cosa fai sul set (facoltativo)", add_ok:"Aggiungimi e fammi votare",
     prize_of:(i,n)=>`Premio ${i} di ${n}`, me_hint:"sei tu", jury:"in giuria: ", next:"Avanti", skip:"Passo",
     extra_eyebrow:"Ultima cosa", extra_title:"Tre domande <span class='rosa'>serie.</span><br>E una foto.",
     q_lunch:"Il pranzo", lunch_lo:"1 · ho ancora fame", lunch_hi:"5 · stella Michelin al cuoco",
@@ -380,6 +401,7 @@ const T = {
     urn:"votes on the chair", urn_empty:"no votes yet", urn_last:"last to vote: ", photos_n:n=>`${n} ${n===1?"photo":"photos"}`,
     vote_btn:"Vote", prizes_label:"Tonight's awards", special:"This edition only", fixed:"Every shoot",
     back:"← Back", who_eyebrow:"The phone is in your hands", who_title:"Who <span class='rosa'>are you?</span>", who_sub:"Tap your face. Anyone who has voted gets a tick: one vote each.",
+    add_me:"Not on the list? Add yourself", add_name:"First and last name", add_role:"What you do on set (optional)", add_ok:"Add me and let me vote",
     prize_of:(i,n)=>`Award ${i} of ${n}`, me_hint:"that's you", jury:"jury: ", next:"Next", skip:"Skip",
     extra_eyebrow:"Last thing", extra_title:"Three <span class='rosa'>serious</span> questions.<br>And a photo.",
     q_lunch:"Lunch", lunch_lo:"1 · still hungry", lunch_hi:"5 · Michelin star for the cook",
@@ -400,6 +422,7 @@ const T = {
     urn:"votos en la silla", urn_empty:"todavía sin votos", urn_last:"último en votar: ", photos_n:n=>`${n} ${n===1?"foto":"fotos"}`,
     vote_btn:"Votar", prizes_label:"Los premios de esta noche", special:"Solo esta edición", fixed:"Cada rodaje",
     back:"← Atrás", who_eyebrow:"El móvil está en tus manos", who_title:"¿Y tú <span class='rosa'>quién eres?</span>", who_sub:"Toca tu cara. Quien ya ha votado tiene el tic: un voto por persona.",
+    add_me:"¿No estás en la lista? Añádete", add_name:"Nombre y apellido", add_role:"Qué haces en el rodaje (opcional)", add_ok:"Añádeme y déjame votar",
     prize_of:(i,n)=>`Premio ${i} de ${n}`, me_hint:"eres tú", jury:"jurado: ", next:"Siguiente", skip:"Paso",
     extra_eyebrow:"Lo último", extra_title:"Tres preguntas <span class='rosa'>serias.</span><br>Y una foto.",
     q_lunch:"La comida", lunch_lo:"1 · sigo con hambre", lunch_hi:"5 · estrella Michelin para el cocinero",
@@ -478,7 +501,7 @@ function setAcc(c){ document.documentElement.style.setProperty("--acc", c); }
 
 function applyT(){
   document.querySelectorAll("[data-t]").forEach(n=>{ const v=t(n.dataset.t); if(typeof v==="string") n.innerHTML=v; });
-  $("#nota").placeholder = t("note_ph"); $("#foto-cap").placeholder = t("cap_ph");
+  $("#nota").placeholder = t("note_ph"); $("#foto-cap").placeholder = t("cap_ph"); $("#who-name").placeholder = t("add_name"); $("#who-role").placeholder = t("add_role");
   $("#who-title").innerHTML = t("who_title"); $("#extra-title").innerHTML = t("extra_title"); $("#awards-title").innerHTML = t("awards_title"); $("#arch-title").innerHTML = t("arch_title");
   document.querySelectorAll(".lang").forEach(l=>{ l.innerHTML=""; ["it","en","es"].forEach(k=>{ const b=el("button",k===LANG?"on":"",k.toUpperCase()); b.addEventListener("click",()=>{ LANG=k; try{localStorage.setItem(KEY+"-lang",k);}catch(e){} applyT(); rerender(); }); l.append(b); }); });
 }
@@ -501,6 +524,7 @@ async function renderHome(){
 /* ---- chi vota ---- */
 const iniziali = n => n.split(/\s+/).map(x=>x[0]).slice(0,2).join("").toUpperCase();
 function renderWho(){
+  $("#who-add-form").hidden=true; $("#who-add-btn").hidden=false;
   const g=$("#grid-who"); g.innerHTML="";
   const fatti = new Set(VOTI.map(v=>v.voter));
   PERSONE.forEach(([n,r,d])=>{
@@ -511,6 +535,15 @@ function renderWho(){
     g.append(b);
   });
 }
+
+$("#who-add-btn").addEventListener("click",()=>{ $("#who-add-form").hidden=false; $("#who-add-btn").hidden=true; $("#who-name").focus(); });
+$("#who-add-ok").addEventListener("click",()=>{
+  const n=$("#who-name").value.trim().replace(/\s+/g," "), r=$("#who-role").value.trim();
+  if(n.length<2) { $("#who-name").focus(); return; }
+  if(!PERSONE.some(p=>p[0].toLowerCase()===n.toLowerCase())){ PERSONE.splice(PERSONE.length-1,0,[n,r,"extra"]); const ex=extraLoad(); ex.push([n,r]); extraSave(ex); }
+  $("#who-name").value=""; $("#who-role").value=""; $("#who-add-form").hidden=true; $("#who-add-btn").hidden=false;
+  corrente={voter:PERSONE.find(p=>p[0].toLowerCase()===n.toLowerCase())[0],picks:{},texts:{},ratings:{},nota:""}; idx=0; fotoPending=null; go("cat");
+});
 
 /* ---- categorie ---- */
 function renderProgress(target, at){ const p=$(target); p.innerHTML=""; for(let i=0;i<PREMI.length+1;i++) p.append(el("i", i<at?"on":(i===at?"now":""))); }
