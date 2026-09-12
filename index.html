@@ -296,7 +296,7 @@ const EDIZIONE = {
 
 /* Raccoglitore centrale (Apps Script + foglio Google, come il menu del set). Vuoto = i voti restano sul telefono di chi vota. */
 const BACKEND = {
-  ENDPOINT: "",   // <-- incolla qui l'URL .../exec del Web App (vedi apps-script/Code.gs e README)
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbz25Hv-iVwuyFjpcbsqVjGfdcjSn5IjbPZ_tenGmE7xDQbyua5fKE40KB3yeRHvWZ1x2w/exec",   // Web App Apps Script «Sedia d'Oro - backend» (account info@11-11stud.io), deployment v1 del 12/09/2026
 };
 
 const PERSONE = [
@@ -549,13 +549,13 @@ document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=
 async function renderHome(){
   $("#edizione-brand").textContent = EDIZIONE.titolo;
   $("#edizione-eyebrow").textContent = EDIZIONE.luogo;
-  $("#home-row").hidden = !isRegia();
+  $("#home-row").hidden = false;
   const s=$("#strip"); s.innerHTML="";
   PREMI.forEach(p=>{ const d=el("div","tile"+(p.fisso?"":" speciale")); d.style.setProperty("--tc",p.col); d.innerHTML=`<div class="ic">${ICONS[p.icon]}</div><b>${esc(pn(p,"n"))}</b><i>${p.fisso?t("fixed"):t("special")}</i>`; s.append(d); });
   if(!$("#hero-sedia").innerHTML){ $("#hero-sedia").innerHTML = sediaSVG("11:11", true); $("#hero-sedia .sedia").classList.add("idle"); }
   let n=VOTI.length, ultimo=VOTI.length?VOTI[VOTI.length-1].voter:"";
   $("#n-voti").textContent = n; $("#ultimo-voto").textContent = n ? t("urn_last")+ultimo : t("urn_empty");
-  if(isRegia()){ const f=await fotoAll(); $("#home-foto").textContent = t("photos_n")(f.length); }
+  { const f=await fotoAll(); $("#home-foto").textContent = t("photos_n")(f.length); }
   if(online()){ flushPending(); try{ const j=await apiGet("ed="+encodeURIComponent(EDIZIONE.id)+"&chi=1"); n=j.votanti.length; ultimo=j.votanti[j.votanti.length-1]||""; $("#n-voti").textContent=n; $("#ultimo-voto").textContent = n ? t("urn_last")+ultimo : t("urn_empty"); }catch(e){} }
 }
 
@@ -687,12 +687,11 @@ function risultati(){
   return {cards, mp, mo, testo:righe.join("\n")};
 }
 async function caricaRemoto(){
-  if(!(isRegia() && online())) { REMOTE=null; return; }
-  try{ const j=await apiGet("ed="+encodeURIComponent(EDIZIONE.id)+"&regia="+encodeURIComponent(regiaKey())); REMOTE=j; }catch(e){ REMOTE=null; toast("!"); }
+  if(!online()) { REMOTE=null; return; }
+  try{ const j=await apiGet("ed="+encodeURIComponent(EDIZIONE.id)+"&risultati=1"+(isRegia()?"&regia="+encodeURIComponent(regiaKey()):"")); REMOTE=j; if(j.n!=null){ $("#n-voti").textContent=j.n; } }catch(e){ REMOTE=null; toast("!"); }
 }
 async function tutteLeFoto(){ const loc=await fotoAll(); if(!REMOTE) return loc; const ids=new Set(loc.map(f=>f.id)); return [...loc, ...REMOTE.foto.filter(f=>!ids.has(f.id))]; }
 async function renderAwards(){
-  if(!isRegia()){ go("home"); return; }
   await caricaRemoto();
   VOTI = REMOTE ? REMOTE.voti : load();
   $("#awards-count").textContent = t("count")(VOTI.length);
@@ -727,14 +726,13 @@ $("#copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.wr
 
 /* ---- archivio ---- */
 async function renderArchivio(){
-  if(!isRegia()){ go("home"); return; }
   await caricaRemoto();
   $("#reset").hidden = !isRegia();
   const G=$("#gallery"); G.innerHTML="";
   const foto=await tutteLeFoto();
   if(!foto.length){ G.append(el("div","empty",t("empty"))); G.style.display="block"; }
-  else { G.style.display="grid"; foto.forEach(f=>{ const d=el("div","ph",`<img src="${fotoURL(f)}" alt="${esc(f.cap)}"><span class="tag">${f.kind==="cer"?t("tag_cer"):t("tag_set")}</span>${(isRegia()&&f.blob)?'<button class="del" aria-label="delete">×</button>':''}<div class="cap"><b>${esc(f.cap||"")}</b><span>${esc(f.voter||"")}</span></div>`);
-    const del=d.querySelector(".del"); if(del) del.addEventListener("click",async()=>{ if(confirm(t("del_confirm"))){ await fotoDel(f.id); renderArchivio(); } }); G.append(d); }); }
+  else { G.style.display="grid"; foto.forEach(f=>{ const d=el("div","ph",`<img src="${fotoURL(f)}" alt="${esc(f.cap)}"><span class="tag">${f.kind==="cer"?t("tag_cer"):t("tag_set")}</span>${isRegia()?'<button class="del" aria-label="delete">×</button>':''}<div class="cap"><b>${esc(f.cap||"")}</b><span>${esc(f.voter||"")}</span></div>`);
+    const del=d.querySelector(".del"); if(del) del.addEventListener("click",async()=>{ if(confirm(t("del_confirm"))){ if(f.blob) await fotoDel(f.id); if(online()&&!f.blob){ try{ await apiPost({tipo:"elimina", ed:EDIZIONE.id, regia:regiaKey(), id:f.id}); }catch(e){ toast("!"); } } renderArchivio(); } }); G.append(d); }); }
 }
 $("#zip").addEventListener("click",async()=>{
   if(typeof JSZip==="undefined"){ toast(t("zip_fail")); return; }
@@ -750,7 +748,7 @@ $("#zip").addEventListener("click",async()=>{
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="Sedia-d-Oro_"+EDIZIONE.id+".zip"; document.body.append(a); a.click(); a.remove();
   toast(t("zip_done"));
 });
-$("#reset").addEventListener("click",async()=>{ if(confirm(t("reset_confirm"))){ VOTI=[]; save(VOTI); await fotoClear(); go("home"); toast(t("reset_done")); } });
+$("#reset").addEventListener("click",async()=>{ if(confirm(t("reset_confirm"))){ VOTI=[]; save(VOTI); await fotoClear(); if(online()){ try{ await apiPost({tipo:"svuota", ed:EDIZIONE.id, regia:regiaKey()}); }catch(e){ toast("!"); } } go("home"); toast(t("reset_done")); } });
 function toast(x){ const n=$("#toast"); n.textContent=x; n.classList.add("on"); setTimeout(()=>n.classList.remove("on"),1800); }
 
 applyT(); renderHome(); flushPending();
