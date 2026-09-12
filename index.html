@@ -208,6 +208,7 @@
     <div class="progress" id="progress"></div>
     <div class="cat-head"><div class="cat-ic" id="cat-ic"></div><div><p class="eyebrow" id="cat-eyebrow"></p><h2 class="acc" id="cat-title"></h2></div></div>
     <p class="muted" id="cat-desc"></p>
+    <p class="eyebrow" id="cat-hint" style="color:var(--carta-3)"></p>
     <div class="chips" id="chips-cat"></div>
     <div id="cat-text-wrap" hidden><label class="q quote-in"><b id="cat-text-label"></b><input type="text" id="cat-text" maxlength="90" autocomplete="off"></label><div class="chips" id="chips-sugg"></div></div>
     <div class="foot">
@@ -378,6 +379,7 @@ const T = {
     urn:"voti sulla sedia", urn_empty:"ancora nessun voto", urn_last:"ultimo a votare: ", photos_n:n=>`${n} ${n===1?"foto":"foto"}`,
     vote_btn:"Vota", prizes_label:"I premi di stasera", special:"Edizione speciale", fixed:"Ogni set",
     back:"← Indietro", who_eyebrow:"Il telefono è in mano a te", who_title:"Tu <span class='rosa'>chi sei?</span>", who_sub:"Tocca la tua faccia. Chi ha già votato ha la spunta: un voto a testa.",
+    hint_tap:"Tocca un nome: si passa da soli al premio dopo", hint_text:"Scrivi e poi Avanti",
     add_me:"Non ti trovi? Aggiungiti", add_name:"Nome e cognome", add_role:"Cosa fai sul set (facoltativo)", add_ok:"Aggiungimi e fammi votare",
     prize_of:(i,n)=>`Premio ${i} di ${n}`, me_hint:"sei tu", jury:"in giuria: ", next:"Avanti", skip:"Passo",
     extra_eyebrow:"Ultima cosa", extra_title:"Tre domande <span class='rosa'>serie.</span><br>E una foto.",
@@ -399,6 +401,7 @@ const T = {
     urn:"votes on the chair", urn_empty:"no votes yet", urn_last:"last to vote: ", photos_n:n=>`${n} ${n===1?"photo":"photos"}`,
     vote_btn:"Vote", prizes_label:"Tonight's awards", special:"This edition only", fixed:"Every shoot",
     back:"← Back", who_eyebrow:"The phone is in your hands", who_title:"Who <span class='rosa'>are you?</span>", who_sub:"Tap your face. Anyone who has voted gets a tick: one vote each.",
+    hint_tap:"Tap a name: it moves to the next award by itself", hint_text:"Write it, then Next",
     add_me:"Not on the list? Add yourself", add_name:"First and last name", add_role:"What you do on set (optional)", add_ok:"Add me and let me vote",
     prize_of:(i,n)=>`Award ${i} of ${n}`, me_hint:"that's you", jury:"jury: ", next:"Next", skip:"Skip",
     extra_eyebrow:"Last thing", extra_title:"Three <span class='rosa'>serious</span> questions.<br>And a photo.",
@@ -420,6 +423,7 @@ const T = {
     urn:"votos en la silla", urn_empty:"todavía sin votos", urn_last:"último en votar: ", photos_n:n=>`${n} ${n===1?"foto":"fotos"}`,
     vote_btn:"Votar", prizes_label:"Los premios de esta noche", special:"Solo esta edición", fixed:"Cada rodaje",
     back:"← Atrás", who_eyebrow:"El móvil está en tus manos", who_title:"¿Y tú <span class='rosa'>quién eres?</span>", who_sub:"Toca tu cara. Quien ya ha votado tiene el tic: un voto por persona.",
+    hint_tap:"Toca un nombre: pasa solo al siguiente premio", hint_text:"Escríbela y luego Siguiente",
     add_me:"¿No estás en la lista? Añádete", add_name:"Nombre y apellido", add_role:"Qué haces en el rodaje (opcional)", add_ok:"Añádeme y déjame votar",
     prize_of:(i,n)=>`Premio ${i} de ${n}`, me_hint:"eres tú", jury:"jurado: ", next:"Siguiente", skip:"Paso",
     extra_eyebrow:"Lo último", extra_title:"Tres preguntas <span class='rosa'>serias.</span><br>Y una foto.",
@@ -547,12 +551,15 @@ $("#who-add-ok").addEventListener("click",()=>{
 function renderProgress(target, at){ const p=$(target); p.innerHTML=""; for(let i=0;i<PREMI.length+1;i++) p.append(el("i", i<at?"on":(i===at?"now":""))); }
 function renderCat(){
   const p = PREMI[idx]; setAcc(p.col);
+  window.scrollTo(0,0);
+  const sec=$("#s-cat"); if(sec.classList.contains("on")){ sec.classList.remove("on"); void sec.offsetWidth; sec.classList.add("on"); }
   renderProgress("#progress", idx);
   $("#cat-voter").textContent = t("jury")+corrente.voter;
   $("#cat-ic").innerHTML = ICONS[p.icon];
   $("#cat-eyebrow").textContent = t("prize_of")(idx+1, PREMI.length) + (p.fisso?"":" · "+t("special").toLowerCase());
   $("#cat-title").textContent = pn(p,"n");
   $("#cat-desc").textContent = pn(p,"desc");
+  $("#cat-hint").textContent = p.type==="person" ? t("hint_tap") : t("hint_text");
   const chips=$("#chips-cat"); chips.innerHTML="";
   const tw=$("#cat-text-wrap"), ti=$("#cat-text"); ti.value = corrente.texts[p.id]||"";
   $("#cat-next").disabled = true;
@@ -561,13 +568,14 @@ function renderCat(){
       const me = n===corrente.voter;
       const b = el("button","chip"+(me?" me":"")+(corrente.picks[p.id]===n?" sel":""),`${esc(n)}<small>${me?t("me_hint"):esc(r)}</small>`);
       if(me) b.disabled=true;
-      b.addEventListener("click",()=>{ corrente.picks[p.id]=n; chips.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); $("#cat-next").disabled=false; });
+      b.addEventListener("click",()=>{ corrente.picks[p.id]=n; chips.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); $("#cat-next").disabled=false; if(!p[LANG].extra){ const mio=idx; setTimeout(()=>{ if(idx===mio && corrente && corrente.picks[p.id]===n) avanti(); },380); } });
       chips.append(b);
     });
     if(corrente.picks[p.id]) $("#cat-next").disabled=false;
     if(p[LANG].extra){ tw.hidden=false; $("#cat-text-label").textContent=pn(p,"extra"); $("#chips-sugg").innerHTML=""; } else tw.hidden=true;
+    $("#cat-next").hidden = !p[LANG].extra && !corrente.picks[p.id];
   } else {
-    tw.hidden=false; $("#cat-text-label").textContent=pn(p,"label");
+    tw.hidden=false; $("#cat-text-label").textContent=pn(p,"label"); $("#cat-next").hidden=false;
     const sugg=$("#chips-sugg"); sugg.innerHTML="";
     [...new Set(VOTI.map(v=>v.texts[p.id]).filter(Boolean))].slice(0,8).forEach(x=>{ const b=el("button","chip",`“${esc(x)}”`); b.addEventListener("click",()=>{ ti.value=x; ti.dispatchEvent(new Event("input")); }); sugg.append(b); });
     $("#cat-next").disabled = !ti.value.trim();
