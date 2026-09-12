@@ -279,7 +279,7 @@
     <div class="gallery" id="gallery"></div>
     <div class="foot">
       <button class="btn" id="zip" data-t="download"></button>
-      <button class="btn ghost" id="reset" data-t="reset"></button>
+      <button class="btn ghost" id="reset" data-t="reset" hidden></button>
     </div>
   </section>
 
@@ -458,6 +458,11 @@ const ICONS = {
   sparkle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8Z"/></svg>',
   bubble:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H10l-5 4v-4H4Z"/><path d="M8 9h8M8 12h5"/></svg>',
 };
+
+/* Modalità regia: solo chi apre il link con ?regia (o #regia) vede «Svuota tutto» e può cancellare le foto. Resta salvata sul telefono; ?regia=off la toglie. */
+const REGIA_KEY = "sedia-doro-regia";
+(function(){ try{ const q=location.search+location.hash; if(/regia=off/.test(q)) localStorage.removeItem(REGIA_KEY); else if(/regia/.test(q)) localStorage.setItem(REGIA_KEY,"1"); }catch(e){} })();
+const isRegia = () => { try{ return localStorage.getItem(REGIA_KEY)==="1"; }catch(e){ return false; } };
 
 /* ============ MOTORE ============ */
 const KEY = "sedia-doro-" + EDIZIONE.id;
@@ -670,11 +675,12 @@ $("#copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.wr
 
 /* ---- archivio ---- */
 async function renderArchivio(){
+  $("#reset").hidden = !isRegia();
   const G=$("#gallery"); G.innerHTML="";
   const foto=await fotoAll();
   if(!foto.length){ G.append(el("div","empty",t("empty"))); G.style.display="block"; }
-  else { G.style.display="grid"; foto.forEach(f=>{ const d=el("div","ph",`<img src="${fotoURL(f)}" alt="${esc(f.cap)}"><span class="tag">${f.kind==="cer"?t("tag_cer"):t("tag_set")}</span><button class="del" aria-label="delete">×</button><div class="cap"><b>${esc(f.cap||"")}</b><span>${esc(f.voter||"")}</span></div>`);
-    d.querySelector(".del").addEventListener("click",async()=>{ if(confirm(t("del_confirm"))){ await fotoDel(f.id); renderArchivio(); } }); G.append(d); }); }
+  else { G.style.display="grid"; foto.forEach(f=>{ const d=el("div","ph",`<img src="${fotoURL(f)}" alt="${esc(f.cap)}"><span class="tag">${f.kind==="cer"?t("tag_cer"):t("tag_set")}</span>${isRegia()?'<button class="del" aria-label="delete">×</button>':''}<div class="cap"><b>${esc(f.cap||"")}</b><span>${esc(f.voter||"")}</span></div>`);
+    const del=d.querySelector(".del"); if(del) del.addEventListener("click",async()=>{ if(confirm(t("del_confirm"))){ await fotoDel(f.id); renderArchivio(); } }); G.append(d); }); }
 }
 $("#zip").addEventListener("click",async()=>{
   if(typeof JSZip==="undefined"){ toast(t("zip_fail")); return; }
