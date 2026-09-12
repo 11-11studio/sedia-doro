@@ -317,6 +317,9 @@ const PERSONE = [
   ["Serena","Tally Weijl","client"],
   ["Roberto (Tally Weijl)","Tally Weijl","client"],
   ["Josè","Tally Weijl","client"],
+  ["Vincenzo","Tally Weijl","client"],
+  ["Marta","Tally Weijl","client"],
+  ["Alessandra Rosano","Catering","craft"],
   ["Guest","Guest","guest"],
 ];
 /* Chi non si trova nella lista si aggiunge da solo dalla pagina «Tu chi sei?»: resta salvato sul telefono. */
@@ -324,7 +327,7 @@ const EXTRA_KEY = "sedia-doro-extra-" + EDIZIONE.id;
 function extraLoad(){ try{ return JSON.parse(localStorage.getItem(EXTRA_KEY)||"[]"); }catch(e){ return []; } }
 function extraSave(v){ try{ localStorage.setItem(EXTRA_KEY, JSON.stringify(v)); }catch(e){} }
 extraLoad().forEach(([n,r])=>{ if(!PERSONE.some(p=>p[0]===n)) PERSONE.splice(PERSONE.length-1,0,[n,r||"",  "extra"]); });
-const REPARTO_COL = {prod:"#F6DD8E",dir:"#ED8EA9",cam:"#9FD8FF",light:"#FFB27A",hmu:"#C9B8FF",talent:"#B8F0C8",client:"#FFFFFF",studio:"#FFD9A0",extra:"#9FF0E6",guest:"#B8AD98"};
+const REPARTO_COL = {prod:"#F6DD8E",dir:"#ED8EA9",cam:"#9FD8FF",light:"#FFB27A",hmu:"#C9B8FF",talent:"#B8F0C8",client:"#FFFFFF",studio:"#FFD9A0",craft:"#B8F0C8",extra:"#9FF0E6",guest:"#B8AD98"};
 
 const PREMI = [
   {id:"mvp", icon:"chair", col:"#E8B84A", type:"person", fisso:true,
