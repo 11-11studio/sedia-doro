@@ -112,12 +112,13 @@
   .chip.me{border-style:dashed;opacity:.45;cursor:default}
   input[type=text],textarea{width:100%;font:inherit;font-size:16px;padding:14px;background:var(--fumo);color:var(--carta);border:1px solid var(--linea);border-radius:12px}
   textarea{min-height:90px;resize:vertical}
-  label.q{display:flex;flex-direction:column;gap:8px}
-  label.q b{font-weight:700;font-size:15px}
+  .q{display:flex;flex-direction:column;gap:8px}
+  .q b{font-weight:700;font-size:15px}
   .quote-in{border-left:3px solid var(--acc);padding-left:12px}
 
   .rate{display:flex;gap:6px}
-  .rate button{flex:1;aspect-ratio:1;appearance:none;border:1px solid var(--linea);background:var(--fumo);cursor:pointer;padding:7px;border-radius:12px}
+  .rate button{flex:1;aspect-ratio:1;appearance:none;border:1px solid var(--linea);background:var(--fumo);cursor:pointer;padding:7px;border-radius:12px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+  .rate button svg *{pointer-events:none}
   .rate button svg{width:100%;height:100%;display:block}
   .rate button.on{background:var(--oro);border-color:var(--oro)}
   .rate button.on svg *{stroke:var(--ink)}
@@ -220,8 +221,8 @@
     <div class="progress" id="progress2"></div>
     <p class="eyebrow" data-t="extra_eyebrow"></p>
     <h2 id="extra-title"></h2>
-    <label class="q"><b data-t="q_lunch"></b><div class="rate" id="rate-pranzo"></div><div class="scala"><span data-t="lunch_lo"></span><span data-t="lunch_hi"></span></div></label>
-    <label class="q"><b data-t="q_day"></b><div class="rate" id="rate-org"></div><div class="scala"><span data-t="day_lo"></span><span data-t="day_hi"></span></div></label>
+    <div class="q"><b data-t="q_lunch"></b><div class="rate" id="rate-pranzo"></div><div class="scala"><span data-t="lunch_lo"></span><span data-t="lunch_hi"></span></div></div>
+    <div class="q"><b data-t="q_day"></b><div class="rate" id="rate-org"></div><div class="scala"><span data-t="day_lo"></span><span data-t="day_hi"></span></div></div>
     <label class="q"><b data-t="q_note"></b><textarea id="nota"></textarea></label>
     <div class="q"><b data-t="q_photo"></b>
       <div class="foto-add">
@@ -580,7 +581,8 @@ $("#cat-back").addEventListener("click",()=>{ if(idx===0) go("who"); else { idx-
 
 /* ---- domande + foto ---- */
 const sediaIcon = ()=>`<svg viewBox="0 0 24 24" fill="none" stroke="#E8B84A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="5" rx="1"/><path d="M5 12h14"/><path d="M6 12l12 8M18 12L6 20"/><path d="M6 3v9M18 3v9"/></svg>`;
-function renderRate(target,key){ const r=$(target); r.innerHTML=""; for(let i=1;i<=5;i++){ const b=el("button",corrente.ratings[key]>=i?"on":"",sediaIcon()); b.type="button"; b.setAttribute("aria-label",i); b.addEventListener("click",()=>{ corrente.ratings[key]=i; renderRate(target,key); }); r.append(b); } }
+function renderRate(target,key){ const r=$(target); r.dataset.key=key; r.innerHTML=""; for(let i=1;i<=5;i++){ const b=el("button",corrente.ratings[key]>=i?"on":"",sediaIcon()); b.type="button"; b.dataset.v=i; b.setAttribute("aria-label",i); r.append(b); } }
+["#rate-pranzo","#rate-org"].forEach(sel=>{ $(sel).addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(!b||!corrente) return; e.preventDefault(); const key=$(sel).dataset.key; corrente.ratings[key]=+b.dataset.v; renderRate(sel,key); }); });
 function renderExtra(){ renderProgress("#progress2", PREMI.length); $("#extra-voter").textContent=t("jury")+corrente.voter; renderRate("#rate-pranzo","pranzo"); renderRate("#rate-org","org"); $("#nota").value=corrente.nota||""; mostraPrev(); }
 function mostraPrev(){ const pv=$("#foto-prev"); if(fotoPending){ pv.classList.add("on"); pv.querySelector("img").src=URL.createObjectURL(fotoPending); $("#foto-cap").hidden=false; $("#foto-btn").hidden=true; } else { pv.classList.remove("on"); $("#foto-cap").hidden=true; $("#foto-btn").hidden=false; $("#foto-cap").value=""; } }
 $("#nota").addEventListener("input",e=>corrente.nota=e.target.value.trim());
